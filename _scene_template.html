@@ -1,0 +1,37 @@
+<!-- Copy to s01-name.html. One small HyperFrames composition per scene.
+     Rules: no Math.random / Date.now, every frame a pure function of time,
+     faces between y 330-1140, captions 1140-1360, nothing important in the bottom 20%. -->
+<template id="s01-example-template">
+  <div data-composition-id="s01-example" data-width="1080" data-height="1920">
+    <svg viewBox="0 0 1080 1920" width="1080" height="1920">
+      <rect width="1080" height="1920" fill="#0B1220"/>
+      <g id="world"></g>
+      <g id="hud"></g>
+      <g id="caps"></g>
+    </svg>
+  </div>
+  <script>
+    const X = LFK.ctx("s01-example");               // scene times come from the audio timeline
+    const world = document.getElementById("world");
+    const cam = LFK.camera(world);
+
+    const girl = LFK.person(world);
+    const z = LFK.zombie(world);
+    const rain = LFK.rain(world);
+    z.glow(0);                                       // hidden until needed
+
+    const tZ = X.mark("s01_zombie");                 // example mark from script.py
+
+    X.drive((t) => {
+      girl.pose({ t, x: 400, y: 900, walk: true, brows: t > tZ ? "scared" : "calm" });
+      z.place(760, 900, 1);
+      z.glow(t > tZ ? 1 : 0);
+      z.sway(t);
+      rain.update(t);
+      cam.at(540, 860, 1 + t * 0.02);                // slow push-in
+    });
+
+    window.__timelines = window.__timelines || {};
+    window.__timelines["s01-example"] = X.tl;
+  </script>
+</template>
